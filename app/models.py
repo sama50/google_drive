@@ -96,3 +96,9 @@ class File(models.Model):
     class Meta:
         unique_together = ('name', 'folder', 'owner')
         ordering = ['name']
+
+
+class SharedFile(models.Model):
+    shared_user = models.ForeignKey(to=User,on_delete=models.CASCADE)
+    file = models.ForeignKey(to=File,on_delete=models.CASCADE)
+    

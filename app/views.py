@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from app.models import Folder, File
 import uuid
+from urllib.parse import urlencode
 # Create your views here.
 
 def home(request):
@@ -58,3 +59,46 @@ def upload_file(request):
             return redirect('/')   
 
     return redirect('/')
+
+
+def shared_file(request):
+    if request.method == 'POST':
+        share_option = request.POST.get("shareOption")
+        file_id = request.POST.get("file_id")
+        emails = request.POST.get("emails", "").strip()
+        redirect_url = request.META.get('HTTP_REFERER', '/')
+        redirect_url = "/".join(redirect_url.split("/")[:-1])
+
+     
+        if not emails:
+            is_public = make_public_file(file_id=file_id)
+            params = {
+                "link" : f" http://127.0.0.1:8000/file/access/{file_id}"
+            }
+
+            if not is_public:
+                params['error'] ='Could not make file public',
+                     
+            query_string = urlencode(params)
+            return redirect(f"{redirect_url}?{query_string}")
+            
+        
+    return redirect('/')
+
+
+def make_public_file(file_id):
+    file = get_file_by_id(file_id=file_id).first()
+    if not filter:
+        return False
+    file.visibility = 'public'
+    file.save()
+    return True
+
+def file_access(request,id):
+    files = get_file_by_id(file_id=id)
+    if not files:
+        return render(request, 'index.html', { 'error': "not such file."})
+    return render(request, 'index.html', { 'files': files,"is_file_shared":True})
+
+def get_file_by_id(file_id):
+    return File.objects.filter(id=file_id)

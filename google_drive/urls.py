@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from app.views import home, get_folders, upload_file
+from app.views import home, get_folders, upload_file, shared_file,file_access
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -25,5 +25,7 @@ urlpatterns = [
     path('',home),
     path('folders/<str:folder_id>/',get_folders,name='folders'),
     path('upload-file/',upload_file),
+    path('shared_file/',shared_file),
+    path('file/access/<str:id>/',file_access)
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
